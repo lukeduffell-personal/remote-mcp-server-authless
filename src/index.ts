@@ -22,25 +22,3 @@ export default {
   },
 };
 
-            result = a * b;
-            break;
-          case "divide":
-            if (b === 0)
-              return {
-                content: [
-                  {
-                    type: "text",
-                    text: "Error: Cannot divide by zero",
-                  },
-                ],
-              };
-            result = a / b;
-            break;
-        }
-        return { content: [{ type: "text", text: String(result) }] };
-      },
-    );
-  }
-}
-// Export the Worker handler
-export default MyMCP.serve("/mcp", { binding: "MyMCP" });
