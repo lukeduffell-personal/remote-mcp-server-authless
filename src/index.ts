@@ -1,35 +1,27 @@
-import { McpAgent } from "agents/mcp";
+import { createMcpHandler } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-// Define our MCP agent with tools
-export class MyMCP extends McpAgent {
-  server = new McpServer({
-    name: "Authless Calculator",
-    version: "1.0.0",
-  });
-  async init() {
-    // Simple addition tool
-    this.server.tool("add", { a: z.number(), b: z.number() }, async ({ a, b }) => ({
-      content: [{ type: "text", text: String(a + b) }],
-    }));
-    // Calculator tool with multiple operations
-    this.server.tool(
-      "calculate",
-      {
-        operation: z.enum(["add", "subtract", "multiply", "divide"]),
-        a: z.number(),
-        b: z.number(),
-      },
-      async ({ operation, a, b }) => {
-        let result: number;
-        switch (operation) {
-          case "add":
-            result = a + b;
-            break;
-          case "subtract":
-            result = a - b;
-            break;
-          case "multiply":
+// Create your MCP server
+const server = new McpServer({
+  name: "my-mcp-server",
+  version: "1.0.0",
+});
+// Add tools to your server
+server.tool(
+  "add_numbers",
+  "Add two numbers together",
+  { a: { type: "number" }, b: { type: "number" } },
+  async (args) => {
+    return {
+      content: [{ type: "text", text: String(args.a + args.b) }],
+    };
+  }
+);
+export default {
+  async fetch(request, env, ctx) {
+    return createMcpHandler(server)(request, env, ctx);
+  },
+};
+
             result = a * b;
             break;
           case "divide":
